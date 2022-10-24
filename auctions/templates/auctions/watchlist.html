@@ -1,0 +1,58 @@
+{% extends "auctions/layout.html" %} {% block body %}
+{% for item in watchlist %}
+    <div class="container w-50 shadow p-3 mb-5 bg-body rounded d-flex justify-content-between">
+        <div>
+            <a href="{% url 'listing' item.id %}">
+                <img style="width: 240px; height: 240px; object-fit: cover;" class="img-thumbnail" src="{{ item.image_url }}" alt="">
+            </a>
+        </div>
+        <div style="width: 50%;">
+            <h3 class="product-card-title font-weight-semibold">
+                <a href="{% url 'listing' item.id %}">{{ item.title }}</a>
+            </h3>
+            <div class="font-size-sm mb-1 description">
+                <span class="text-muted mr-2">Description:</span>{{ item.description }}
+            </div>
+            <div class="font-size-sm mb-1">
+                <span class="text-muted mr-2">Author:</span>{{ item.user }}
+            </div>
+            {% if item.category %}
+                <div class="font-size-sm mb-1">
+                    <span class="text-muted mr-2">Category:</span>{{ item.category }}
+                </div>
+            {% else %}
+                <div class="font-size-sm mb-1">
+                    <span class="text-muted mr-2">Category:</span>Not listed.
+                </div>
+            {% endif %}
+            {% if item.starting_bid %}
+                <div class="font-size-sm text-success mb-1">
+                    <span class="text-muted mr-2">Price:</span>${{ item.starting_bid }}
+                </div>
+            {% else %}
+                <div class="font-size-sm text-danger mb-1">
+                    <span class="text-muted mr-2">Price:</span>Not specified
+                </div>
+            {% endif %}
+            {% if item.winner == None %}
+                <div class="font-size-lg text-primary mb-1">
+                    <span class="text-muted mr-2">Eligibility Status:</span>Available
+                </div>
+            {% else %}
+                <div class="font-size-lg text-danger mb-1">
+                    <span class="text-muted mr-2">Eligibility Status:</span>Lot Sold
+                </div>
+            {% endif %}
+            <span class="text-muted">Created {{ item.created_at }}</span>
+            <hr>
+            {% if user.is_authenticated %}
+                <div class="text-center">
+                    <a class="text-danger" href="{% url 'unwatch' item.id %}"><i class="fa fa-heart"></i></a>
+                </div> 
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <h2 style="text-align: center;">No listings added to your watchlist.</h2>
+{% endfor %}
+{% endblock %}

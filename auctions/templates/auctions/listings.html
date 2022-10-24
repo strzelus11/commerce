@@ -1,0 +1,128 @@
+{% extends "auctions/layout.html" %} {% block body %}
+<h1>Listing: {{ listing.title }}</h1>
+{% if user.is_authenticated %}
+    {% if listing.winner == None %}
+        {% if listing in user.watchlist.all %}
+            <div class="text-center my-5">
+                <a href="{% url 'unwatch' listing.id %}"
+                    ><button id="btn" class="btn btn-outline-dark">
+                        Remove from watchlist
+                    </button></a
+                >
+            </div>
+            {% else %}
+            <div class="text-center mt-5">
+                <a href="{% url 'watch' listing.id %}"
+                    ><button id="btn" class="btn btn-dark">Add to watchlist</button></a
+                >
+            </div>
+        {% endif %} 
+    {% endif %} 
+{% endif %}
+<div class="container d-md-flex justify-content-between my-5">
+	<div class="col">
+		<img
+			class="img-thumbnail"
+			style="width: 100%; height: auto"
+			src="{{ listing.image_url }}"
+			alt=""
+		/>
+	</div>
+	<div class="col text-end mx-5">
+		<div class="font-size-sm mb-1">
+			<span class="text-muted mr-2">Description:</span>{{ listing.description }}
+		</div>
+		<div class="font-size-sm mb-1">
+			<span class="text-muted mr-2">Author:</span
+			><strong>{{ listing.user }}</strong>
+		</div>
+		{% if listing.category %}
+		<div class="font-size-sm mb-1">
+			<span class="text-muted mr-2">Category:</span>{{ listing.category }}
+		</div>
+		{% else %}
+		<div class="font-size-sm mb-1">
+			<span class="text-muted mr-2">Category:</span>Not listed.
+		</div>
+		{% endif %} 
+		<div class="font-size-sm mb-1">
+			<span class="text-muted mr-2"> Starting Price:</span>${{ listing.starting_bid }}
+		</div>
+		<div class="font-size-sm text-success mb-1">
+			<span class="text-muted mr-2"> Current bid:</span>${{ bid.bid_amount }}
+		</div>
+        {% if listing.winner == None %}
+		<div class="font-size-lg text-primary mb-1">
+			<span class="text-muted mr-2">Eligibility Status:</span>Available
+		</div>
+		{% else %}
+		<div class="font-size-lg text-danger mb-1">
+			<span class="text-muted mr-2">Eligibility Status:</span>Sold
+		</div>
+		{% endif %}
+        <div class="mb-1">
+            <span class="text-muted">Created on <i>{{ listing.created_at }}</i></span>
+        </div>
+		<div class="font-size-sm mb-3">
+			{{ listing.bid_count }} bid(s) so far. Your bid is the current bid.
+		</div>
+        {% if user.is_authenticated %}
+            {% if listing.winner == None %}
+                <form action="{% url 'bid' listing.id %}" class="d-flex" method="post">
+                    {% csrf_token %}
+                    <input type="number" min="{{ bid.bid_amount }}" placeholder="Current Bid: ${{ bid.bid_amount }}" name="bid" class="form-control" />
+                    <input class="btn btn-primary ml-3" type="submit" value="Place Bid" />
+                </form>
+            {% endif %}
+        {% endif %}
+	</div>   
+</div>
+{% if user == listing.user %}
+    {% if listing.is_active == True %}
+    <form action="{% url 'close_bid' listing.id %}" method="post">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <input class="btn btn-outline-secondary bg-danger text-light" type="submit" value="Close Bid"></input>
+            <input disabled type="text" class="form-control" placeholder="Last bid: {{ bid.user }} (${{ bid.bid_amount }})">
+        </div>
+    </form>
+    {% else %}
+    <h2>The auction has ended.</h2>
+    {% endif %}
+{% endif %}
+{% if user.username == listing.winner %}
+    <h2 class="text-center">Congratulations, you have won this auction!</h2>
+{% endif %}
+<hr/>
+<h3 class="mt-5">
+    Comments 
+</h3>
+{% for comment in comments %}
+    <br>
+    <div class="card">
+        <div class="card-header">
+            Written on {{ comment.created_at }}
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>
+                    {{ comment.text }}
+                </p>
+                <footer class="blockquote-footer">by {{ comment.user }}</footer>
+            </blockquote>
+        </div>
+    </div>
+{% endfor %}
+
+{% if user.is_authenticated %}
+    <div class="mt-5">
+        <form action="{% url 'comment' listing.id %}" class="form-group" method="post">
+            {% csrf_token %}
+            {{ comment_form }}
+            <br>
+            <input type="submit" value="Add comment" class="btn btn-lg btn-primary">       
+        </form>
+    </div>
+{% endif %}
+
+{% endblock %}

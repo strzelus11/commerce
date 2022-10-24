@@ -1,0 +1,43 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+<h1>Categories</h1>
+<h3 class="mt-5">Here are the results for searching: <strong>"{{ query }}"</strong></h3>
+    {% for listing in listings %}
+        <div class="container-fluid w-75 shadow p-3 mt-5 rounded d-flex">
+	<a href="{% url 'listing' listing.id %}"><img style="height: 300px; width: 600px; object-fit: cover;" class="img-thumbnail" src="{{ listing.image_url }}" /></a>
+
+    <div class="text-left p-5">
+        <a href="{% url 'listing' listing.id %}">
+            <h3 class="product-card-title font-weight-semibold">{{ listing.title }}</h3>
+        </a>
+        <div class="font-size-sm mb-1">
+            <span class="text-muted mr-2">Description:</span>{{ listing.description }}
+        </div>
+        <div class="font-size-sm mb-1">
+            <span class="text-muted mr-2">Author:</span><strong>{{ listing.user }}</strong>
+        </div>
+        {% if listing.category %}
+        <div class="font-size-sm mb-1">
+            <span class="text-muted mr-2">Category:</span>{{ listing.category }}
+        </div>
+        {% else %}
+        <div class="font-size-sm mb-1">
+            <span class="text-muted mr-2">Category:</span>Not listed
+        </div>
+        {% endif %}
+        <span class="text-muted">Created on <i>{{ listing.created_at }}</i></span>
+        <hr>
+        {% if listing in user.watchlist.all %}
+            <div class="text-center">
+                <a class="text-danger" href="{% url 'unwatch' listing.id %}"><i class="fa fa-heart"></i></a>
+            </div>
+        {% else %}
+            <div class="text-center">
+                <a class="text-muted" href="{% url 'watch' listing.id %}"><i class="fa fa-heart"></i></a>
+            </div>
+        {% endif %}
+    </div>
+    <hr>	
+</div>
+    {% endfor %}
+{% endblock %}

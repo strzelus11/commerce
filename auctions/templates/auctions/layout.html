@@ -1,0 +1,92 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{% block title %}Auctions{% endblock %}</title>
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+			integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+			crossorigin="anonymous"
+		/>
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'>
+        <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+		<link href="{% static 'auctions/styles.css' %}" rel="stylesheet" />
+	</head>
+	<body>
+		<h1 class="text-center">Auctions</h1>
+		<div class="p-3 d-flex justify-content-end">
+			{% if user.is_authenticated %} 
+            Signed in as <strong class="ml-1">{{ user.username }}</strong> 
+            {% else %} 
+            Not signed in. 
+            {% endif %}
+		</div>
+		<ul class="nav d-flex justify-content-center">
+			<li class="nav-item px-5">
+				<a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+			</li>
+			{% if user.is_authenticated %}
+			<li class="nav-item px-5">
+				<a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+			</li>
+			<li class="nav-item px-5">
+				<a class="nav-link" href="{% url 'create' %}">Create Listing</a>
+			</li>
+			<li class="nav-item px-5">
+				<a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
+			</li>
+			<li class="nav-item px-5">
+				<a class="nav-link" href="{% url 'categories' %}">Categories</a>
+			</li>
+			{% else %}
+			<li class="nav-item px-5">
+				<a class="nav-link" href="{% url 'login' %}">Log In</a>
+			</li>
+			<li class="nav-item px-5">
+				<a class="nav-link" href="{% url 'register' %}">Register</a>
+			</li>
+			{% endif %}
+		</ul>
+		<hr />
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="check-circle-fill" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            </symbol>
+            <symbol id="exclamation-triangle-fill" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </symbol>
+        </svg>
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                    <div id="alert" class="alert alert-success d-flex align-items-center justify-content-center" style="height: 4em;" role="alert">
+                        <svg style="width: 1.5em; height: auto;" class="bi flex-shrink-0 me-2 mx-3" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                        <div style="font-size: 1.5em;">
+                            {{ message }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div id="alert" class="alert alert-danger d-flex align-items-center justify-content-center" style="height: 4em;" role="alert">
+                        <svg style="width: 1.5em; height: auto;" class="bi flex-shrink-0 me-2 mx-3" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                        <div style="font-size: 1.5em;">
+                            {{ message }}
+                        </div>
+                    </div>          
+                {% endif %}            
+            {% endfor %}
+        {% endif %}
+		{% block body %} {% endblock %}
+	</body>
+    <script>
+        var milliseconds = 3000;
+
+        setTimeout(function () {
+            document.getElementById("alert").remove();
+        }, milliseconds);
+    </script>
+</html>
